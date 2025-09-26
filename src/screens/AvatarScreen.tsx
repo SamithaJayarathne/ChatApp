@@ -125,7 +125,7 @@ export default function AvatarScreen() {
         <View className="absolute bottom-5 w-full px-5">
           <Pressable
             disabled={!image}
-            onPress={() => {
+            onPress={async() => {
               console.log("pressed");
 
               const validProfile = validateProfileImg(
@@ -141,8 +141,8 @@ export default function AvatarScreen() {
               } else {
                 console.log("done");
                 console.log(userData);
-                
-                navigation.replace("SignUpScreen"); // go to next screen
+
+                await createNewAccount(userData);
               }
             }}
             className={`h-14 justify-center items-center rounded-full ${image ? "bg-green-600" : "bg-gray-400"
