@@ -1,10 +1,12 @@
 import { useUserRegistration } from "../components/UserContext";
+import { UserRegistrationData } from "../components/UserContext";
 
-export interface User{
+export interface User {
 
 }
 
-export function createNewAccount() {
-    const { userData, setUserData } = useUserRegistration();
-    console.log(userData);
+export const createNewAccount = async (
+    userRegistrationData: UserRegistrationData
+) => {
+    console.log(userRegistrationData);
 }
