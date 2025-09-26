@@ -8,6 +8,7 @@ import {
   Pressable,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -21,6 +22,7 @@ import { createNewAccount } from "../service/UserService";
 type AvatarProps = NativeStackNavigationProp<RootStack, "AvatarScreen">;
 
 export default function AvatarScreen() {
+  const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const navigation = useNavigation<AvatarProps>();
 
@@ -124,8 +126,8 @@ export default function AvatarScreen() {
         {/* Final Action Button */}
         <View className="absolute bottom-5 w-full px-5">
           <Pressable
-            disabled={!image}
-            onPress={async() => {
+            disabled={!image || loading}
+            onPress={async () => {
               console.log("pressed");
 
               const validProfile = validateProfileImg(
@@ -136,23 +138,48 @@ export default function AvatarScreen() {
                 Toast.show({
                   type: ALERT_TYPE.WARNING,
                   title: "Warning",
-                  textBody: validProfile, // use the returned error
+                  textBody: validProfile,
                 });
               } else {
-                console.log("done");
-                console.log(userData);
+                setLoading(true);
 
-                await createNewAccount(userData);
+                try {
+                  console.log("done");
+                  console.log(userData);
+
+                  const response = await createNewAccount(userData);
+
+                  if (response.status) {
+                    setLoading(false);
+                    navigation.replace("HomeScreen");
+                  } else {
+                    setLoading(false);
+                    Toast.show({
+                      type: ALERT_TYPE.WARNING,
+                      title: "Warning",
+                      textBody: response.message,
+                    });
+                  }
+                } catch (error) {
+                  setLoading(false);
+                  console.error(error);
+                }
               }
             }}
             className={`h-14 justify-center items-center rounded-full ${image ? "bg-green-600" : "bg-gray-400"
               }`}
           >
-            <Text className="text-slate-100 font-bold text-2xl">
-              Create Account
-            </Text>
+            {loading ? (
+              <ActivityIndicator size="large" color="#fff" />
+            ) : (
+              <Text className="text-slate-100 font-bold text-2xl">
+                Create Account
+              </Text>
+            )}
           </Pressable>
         </View>
+
+
       </View>
     </SafeAreaView>
   );

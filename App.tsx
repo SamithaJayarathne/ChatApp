@@ -37,7 +37,7 @@ export default function App() {
 
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="SplashScreen" // the screen opens first when the app is started
+            initialRouteName="HomeScreen" // the screen opens first when the app is started
             screenOptions={{
               animation: "fade",
             }}
