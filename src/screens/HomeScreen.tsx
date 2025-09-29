@@ -9,6 +9,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5'; // For ellipsis-v
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'; // For camera
+import { useChatList } from "../socket/UseChatList";
 
 const chats = [
   {
@@ -64,8 +65,11 @@ const chats = [
 type HomeScreenProps = NativeStackNavigationProp<RootStack, "HomeScreen">
 
 export default function HomeScreen() {
+
   const navigation = useNavigation<HomeScreenProps>();
   const [search, setSearch] = useState("");
+
+  const chatList = useChatList();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -92,7 +96,17 @@ export default function HomeScreen() {
   );
 
   const renderItem = ({ item }: any) => (
-    <TouchableOpacity className="flex-row items-center p-3">
+    <TouchableOpacity
+      className="flex-row items-center p-3"
+      onPress={() => {
+        navigation.navigate("SingleChatScreen", {
+          chatId: 1,
+          friendName: "Samitha Jaye",
+          lastSeenTime: "8.07 PM",
+          profileImage: require("../../assets/avatar_2.png")
+        });
+      }}
+    >
       {/* Profile Image */}
       <Image source={item.profile} className="h-12 w-12 rounded-full" />
 

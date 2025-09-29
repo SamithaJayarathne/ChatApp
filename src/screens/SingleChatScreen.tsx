@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Image, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, FlatList, TextInput } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStack } from "../../App";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useLayoutEffect, useState } from "react";
@@ -18,11 +18,11 @@ const dummyMessages: Message[] = [
 
 ];
 
-type SingleChatScreenProps = NativeStackNavigationProp<RootStack, "SingleChatScreen">
+type SingleChatScreenProps = NativeStackScreenProps<RootStack, "SingleChatScreen">
 
-export default function SingleChatScreen() {
+export default function SingleChatScreen({ route, navigation }: SingleChatScreenProps) {
 
-    const navigation = useNavigation<SingleChatScreenProps>();
+    const { chatId, friendName, lastSeenTime, profileImage } = route.params;
 
     const [message, setMessage] = useState<Message[]>([{
         id: 1,
@@ -89,13 +89,13 @@ export default function SingleChatScreen() {
             headerLeft: () => (
                 <View className="flex-row items-center gap-2">
                     <Image
-                        source={require("../../assets/avatar_1.png")}
+                        source={require("../../assets/avatar_2.png")}
                         className="h-14 w-14 rounded-full border-2 border-green-500 shadow-md"
                     />
 
                     <View className="space-y-2">
-                        <Text className="font-bold text-2xl">John Doe</Text>
-                        <Text className="italic text-xs font-bold text-gray-500">Last seen today at 11:08 AM</Text>
+                        <Text className="font-bold text-2xl">{friendName}</Text>
+                        <Text className="italic text-xs font-bold text-gray-500">Last seen {lastSeenTime}</Text>
                     </View>
                 </View>
             ),
@@ -173,7 +173,7 @@ export default function SingleChatScreen() {
             <KeyboardAvoidingView
                 behavior={Platform.OS === "android" ? "padding" : "height"}
                 className="flex-1"
-                // keyboardVerticalOffset={110} // adjust based on your header height
+            // keyboardVerticalOffset={110} // adjust based on your header height
             >
 
                 <FlatList

@@ -15,6 +15,8 @@ import { UserRegistrationProvider } from './src/components/UserContext';
 import { UserRegistrationData } from './src/components/UserContext';
 import HomeTabs from './src/screens/HomeTabs';
 import SingleChatScreen from './src/screens/SingleChatScreen';
+import { AlertNotificationRoot } from 'react-native-alert-notification';
+import { WebSocketProvider } from './src/socket/WebSocketProvider';
 
 export type RootStack = {
   SplashScreen: undefined,
@@ -27,78 +29,82 @@ export type RootStack = {
   ProfileScreen: undefined,
   SingleChatScreen: {
     chatId: number;
-    chatName: string;
+    friendName: string;
     lastSeenTime: string;
     profileImage: string;
   }
 }
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStack>();
 
 export default function App() {
 
   return (
+    <AlertNotificationRoot>
 
-    <ThemeProvider>
+      <WebSocketProvider userId={5}>
+        <ThemeProvider>
 
-      <UserRegistrationProvider>
+          <UserRegistrationProvider>
 
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="SingleChatScreen" // the screen opens first when the app is started
-            screenOptions={{
-              animation: "fade",
-            }}
-          >
+            <NavigationContainer>
+              <Stack.Navigator
+                initialRouteName="HomeScreen" // the screen opens first when the app is started
+                screenOptions={{
+                  animation: "fade",
+                }}
+              >
 
-            <Stack.Screen
-              name="SplashScreen"
-              component={SplashScreen}
-              options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="SplashScreen"
+                  component={SplashScreen}
+                  options={{ headerShown: false }} />
 
-            <Stack.Screen
-              name="SignUpScreen"
-              component={SignUpScreen}
-              options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="SignUpScreen"
+                  component={SignUpScreen}
+                  options={{ headerShown: false }} />
 
-            <Stack.Screen
-              name="ContactScreen"
-              component={ContactScreen}
-              options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="ContactScreen"
+                  component={ContactScreen}
+                  options={{ headerShown: false }} />
 
-            <Stack.Screen
-              name="AvatarScreen"
-              component={AvatarScreen}
-              options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="AvatarScreen"
+                  component={AvatarScreen}
+                  options={{ headerShown: false }} />
 
-            <Stack.Screen
-              name="SignInScreen"
-              component={SignInScreen}
-              options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="SignInScreen"
+                  component={SignInScreen}
+                  options={{ headerShown: false }} />
 
-            <Stack.Screen
-              name="HomeScreen"
-              component={HomeTabs}
-              options={{ headerShown: false }}
-            />
+                <Stack.Screen
+                  name="HomeScreen"
+                  component={HomeTabs}
+                  options={{ headerShown: false }}
+                />
 
-            <Stack.Screen
-              name="SettingScreen"
-              component={SettingScreen} />
+                <Stack.Screen
+                  name="SettingScreen"
+                  component={SettingScreen} />
 
-            <Stack.Screen
-              name="ProfileScreen"
-              component={ProfileScreen} />
+                <Stack.Screen
+                  name="ProfileScreen"
+                  component={ProfileScreen} />
 
-            <Stack.Screen
-              name="SingleChatScreen"
-              component={SingleChatScreen} />
+                <Stack.Screen
+                  name="SingleChatScreen"
+                  component={SingleChatScreen} />
 
-          </Stack.Navigator>
-        </NavigationContainer>
+              </Stack.Navigator>
+            </NavigationContainer>
 
-      </UserRegistrationProvider>
+          </UserRegistrationProvider>
 
-    </ThemeProvider>
+        </ThemeProvider>
+      </WebSocketProvider>
+    </AlertNotificationRoot>
   );
 }
