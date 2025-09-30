@@ -5,6 +5,9 @@ import { RootStack } from "../../App";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useLayoutEffect, useState } from "react";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useSingleChat } from "../socket/UseSingleChat";
+import { Chat } from "../socket/Chat";
+import { useSendChat } from "../socket/UseSendChat";
 
 type Message = {
     id: number,
@@ -24,62 +27,8 @@ export default function SingleChatScreen({ route, navigation }: SingleChatScreen
 
     const { chatId, friendName, lastSeenTime, profileImage } = route.params;
 
-    const [message, setMessage] = useState<Message[]>([{
-        id: 1,
-        text: "Hey, how are you doing?",
-        sender: "friend",
-        time: "9:40 AM",
-        status: "read",
-    },
-    {
-        id: 2,
-        text: "I’m good, just finishing some work. You?",
-        sender: "me",
-        time: "9:42 AM",
-        status: "read",
-    },
-    {
-        id: 3,
-        text: "All good here. Are we still on for lunch later?",
-        sender: "friend",
-        time: "9:45 AM",
-        status: "delivered",
-    },
-    {
-        id: 4,
-        text: "Yes, let’s meet at the café around 1 PM.",
-        sender: "me",
-        time: "9:47 AM",
-        status: "sent",
-    },
-    {
-        id: 5,
-        text: "Perfect 👍",
-        sender: "friend",
-        time: "9:48 AM",
-        status: "delivered",
-    },
-    {
-        id: 6,
-        text: "By the way, did you check the document I sent yesterday?",
-        sender: "friend",
-        time: "10:02 AM",
-        status: "delivered",
-    },
-    {
-        id: 7,
-        text: "Yes, I reviewed it. Looks great, just a few small tweaks needed.",
-        sender: "me",
-        time: "10:05 AM",
-        status: "read",
-    },
-    {
-        id: 8,
-        text: "Awesome, thanks for checking 🙌",
-        sender: "friend",
-        time: "10:06 AM",
-        status: "delivered",
-    },]);
+    const messages = useSingleChat(chatId); // chatId == friend Id
+    const sendMessage = useSendChat();
 
     const [input, setInput] = useState("");
 
@@ -89,7 +38,7 @@ export default function SingleChatScreen({ route, navigation }: SingleChatScreen
             headerLeft: () => (
                 <View className="flex-row items-center gap-2">
                     <Image
-                        source={require("../../assets/avatar_2.png")}
+                        source={{ uri: profileImage }}
                         className="h-14 w-14 rounded-full border-2 border-green-500 shadow-md"
                     />
 
@@ -109,8 +58,8 @@ export default function SingleChatScreen({ route, navigation }: SingleChatScreen
         });
     }, [navigation]);
 
-    const renderItem = ({ item }: { item: Message }) => {
-        const isMe = item.sender === "me";
+    const renderItem = ({ item }: { item: Chat }) => {
+        const isMe = item.from_user.id !== chatId;
         return (
             <View
                 className={`my-1 px-4 py-2 max-w-[75%] ${isMe
@@ -126,11 +75,11 @@ export default function SingleChatScreen({ route, navigation }: SingleChatScreen
                 }}
             >
                 <Text className={`${isMe ? "text-white" : "text-black"} text-base`}>
-                    {item.text}
+                    {item.message}
                 </Text>
                 <View className="flex-row justify-end items-center mt-1 gap-1">
                     <Text className={`${isMe ? "text-white" : "text-black"} italic text-xs`}>
-                        {item.time}
+                        {item.createdAt}
                     </Text>
                     {isMe && (
                         <Ionicons
@@ -150,22 +99,14 @@ export default function SingleChatScreen({ route, navigation }: SingleChatScreen
         );
     };
 
-    const sendMessage = () => {
-        if (input.trim()) {
-            const newMsg: Message = {
-                id: Date.now(),
-                text: input,
-                sender: 'me',
-                time: Date.now().toString(),
-                status: 'sent'
-            };
-            setMessage([newMsg, ...message]);
-            setInput("");
-        };
-
-        return !input.trim();
-
-    };
+    const handleSendChat = () => {
+        if (!input.trim()) {
+            return;
+        }
+        sendMessage(chatId, input);
+        console.log("message sent");
+        setInput("");
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-white" edges={["right", "bottom", "left"]}>
@@ -177,11 +118,11 @@ export default function SingleChatScreen({ route, navigation }: SingleChatScreen
             >
 
                 <FlatList
-                    data={message}
+                    data={messages}
                     renderItem={renderItem}
                     className="px-3 flex-1"
                     contentContainerStyle={{ paddingBottom: 60 }}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(_, index) => index.toString()}
 
                 />
                 <View className="flex-row items-end bg-white px-3 gap-2">
@@ -194,7 +135,7 @@ export default function SingleChatScreen({ route, navigation }: SingleChatScreen
                     />
                     <TouchableOpacity
                         className="rounded-full bg-green-500 h-14 w-14 items-center justify-center"
-                        onPress={sendMessage}
+                        onPress={handleSendChat}
                     >
                         <Ionicons name="send" size={24} color="black" />
                     </TouchableOpacity>

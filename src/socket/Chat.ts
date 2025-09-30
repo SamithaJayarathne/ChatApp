@@ -8,13 +8,18 @@ export interface User {
 }
 
 export interface Chat {
-    id: number;
-    message: string;
-    from: User;
-    to: User;
+    friendId: number;
+    friendName:string;
+    lastMessage:string;
+    lastTimeStamp:string;
+    unreadCount:string;
+    profileImage:string;
+    from_user: User;
+    to_usesr: User;
     createdAt: string;
     updatedAt: string;
-    status: "SEND" | "DELIVERED" | "READ";
+    status: string;
+    message:string;
 }
 
 export interface WebSocketRequest {
@@ -26,5 +31,5 @@ export interface WebSocketRequest {
 
 export interface WSResponse {
     type: string;
-    data: any;
+    payload : any;
 }

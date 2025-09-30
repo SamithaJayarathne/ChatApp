@@ -10,6 +10,7 @@ import Feather from '@expo/vector-icons/Feather';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5'; // For ellipsis-v
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'; // For camera
 import { useChatList } from "../socket/UseChatList";
+import { formatChatTime } from "../util/DateFormatter";
 
 const chats = [
   {
@@ -89,9 +90,9 @@ export default function HomeScreen() {
     });
   }, [navigation]);
 
-  const filteredChats = chats.filter(
+  const filteredChats = chatList.filter(
     (chat) =>
-      chat.name.toLowerCase().includes(search.toLowerCase()) ||
+      chat.friendName.toLowerCase().includes(search.toLowerCase()) ||
       chat.lastMessage.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -100,15 +101,18 @@ export default function HomeScreen() {
       className="flex-row items-center p-3"
       onPress={() => {
         navigation.navigate("SingleChatScreen", {
-          chatId: 1,
-          friendName: "Samitha Jaye",
-          lastSeenTime: "8.07 PM",
-          profileImage: require("../../assets/avatar_2.png")
+          chatId: item.friendId,
+          friendName: item.friendName,
+          lastSeenTime: formatChatTime(item.lastTimeStamp),
+          profileImage: item.profileImage,
         });
       }}
     >
       {/* Profile Image */}
-      <Image source={item.profile} className="h-12 w-12 rounded-full" />
+      <Image
+        source={{ uri: item.profileImage }}
+        className="h-12 w-12 rounded-full"
+      />
 
       {/* Name + Last Message */}
       <View className="ml-3 flex-1">
@@ -117,7 +121,7 @@ export default function HomeScreen() {
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {item.name}
+          {item.friendName}
         </Text>
         <Text
           className="text-gray-500"
@@ -130,15 +134,20 @@ export default function HomeScreen() {
 
       {/* Time + Unread Badge */}
       <View className="items-end">
-        <Text className="text-gray-400 text-sm">{item.time}</Text>
-        {item.unread > 0 && (
+        <Text className="text-gray-400 text-sm">
+          {formatChatTime(item.lastTimeStamp)}
+        </Text>
+        {item.unreadCount && Number(item.unreadCount) > 0 && (
           <View className="bg-green-500 rounded-full px-2 py-1 mt-1">
-            <Text className="text-white text-xs font-bold">{item.unread}</Text>
+            <Text className="text-white text-xs font-bold">
+              {item.unreadCount}
+            </Text>
           </View>
         )}
       </View>
     </TouchableOpacity>
   );
+
 
   return (
     <SafeAreaView className="flex-1 mt-2" edges={["right", "bottom", "left"]}>
@@ -158,7 +167,7 @@ export default function HomeScreen() {
         <FlatList
           data={filteredChats}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.friendId.toString()}
           contentContainerStyle={{ paddingBottom: 80 }}
         />
       </View>

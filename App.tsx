@@ -39,6 +39,8 @@ const Stack = createNativeStackNavigator<RootStack>();
 
 export default function App() {
 
+  const USER_ID = 4;
+
   return (
     <AlertNotificationRoot>
 

@@ -16,13 +16,12 @@ export function useChatList(): Chat[] {
 
 
         const onMessage = (event: MessageEvent) => {
-            // const data: WSResponse = JSON.parse(event.data);
-            // if (data.type === "friend_list") {
-            //     console.log(data.data);
-            //     setChatList(data.data);
-            // }
-
-            console.log(event.data)
+    
+            const response: WSResponse = JSON.parse(event.data);
+            if (response.type === "friend_list") {
+                setChatList(response.payload);
+            }
+            console.log(response.payload);
         };
 
         socket.addEventListener("message", onMessage);
